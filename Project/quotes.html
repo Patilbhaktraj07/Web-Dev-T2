@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Quote Saver</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #eceff1;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .input-section {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    input {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 8px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      padding: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .delete-btn {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Mini Quote Saver</h1>
+
+    <div class="input-section">
+      <input
+        type="text"
+        id="quoteInput"
+        placeholder="Enter your favorite quote..."
+      >
+      <button onclick="addQuote()">Add</button>
+    </div>
+
+    <ul id="quotesList"></ul>
+  </div>
+
+  <script>
+    var STORAGE_KEY = "savedQuotes";
+    var quotes = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+    function saveQuotes() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(quotes));
+    }
+
+    function renderQuotes() {
+      var list = document.getElementById("quotesList");
+      list.innerHTML = "";
+
+      for (var i = 0; i < quotes.length; i++) {
+        var li = document.createElement("li");
+
+        var span = document.createElement("span");
+        span.textContent = '"' + quotes[i] + '"';
+
+        var btn = document.createElement("button");
+        btn.textContent = "Delete";
+        btn.className = "delete-btn";
+        btn.onclick = (function(index) {
+          return function() {
+            deleteQuote(index);
+          };
+        })(i);
+
+        li.appendChild(span);
+        li.appendChild(btn);
+        list.appendChild(li);
+      }
+    }
+
+    function addQuote() {
+      var input = document.getElementById("quoteInput");
+      var text = input.value.trim();
+
+      if (text === "") return;
+
+      quotes.push(text);
+      saveQuotes();
+      input.value = "";
+      renderQuotes();
+    }
+
+    function deleteQuote(index) {
+      quotes.splice(index, 1);
+      saveQuotes();
+      renderQuotes();
+    }
+
+    document.getElementById("quoteInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        addQuote();
+      }
+    });
+
+    renderQuotes();
+  </script>
+</body>
+</html>
